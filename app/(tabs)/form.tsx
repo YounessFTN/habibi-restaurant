@@ -1,11 +1,9 @@
-import { useFood } from "@/components/context/FoodContext"; // Importer le hook personnalisé
 import { HelloWave } from "@/components/HelloWave";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { useState } from "react";
 import {
-  Alert,
   Image,
   StyleSheet,
   Text,
@@ -17,31 +15,29 @@ export default function Form() {
   const [title, setTitle] = useState("");
   const [picture, setPicture] = useState("");
   const [timeMinutes, setTimeMinutes] = useState(0);
-  const { setFood } = useFood(); // Récupérer la fonction setFood depuis le contexte
+  const [food, setFood] = useState([]);
+  async function handleSubmit() {
+    const donnees = {
+      title,
+      picture,
+      timeMinutes,
+    };
 
-  // Fonction pour gérer l'envoi du formulaire
-  const handleSubmit = () => {
-    if (title && picture && timeMinutes) {
-      // Ajouter l'aliment au contexte
-      setFood(
-        (
-          prevFood: { title: string; picture: string; timeMinutes: number }[]
-        ) => [
-          ...prevFood,
-          { title, picture, timeMinutes }, // L'aliment à ajouter
-        ]
-      );
-
-      // Afficher une alerte avec les données
-      Alert.alert(
-        "Form Data",
-        `Title: ${title}\nPicture: ${picture}\nTime: ${timeMinutes}`
-      );
-    } else {
-      Alert.alert("Erreur", "Veuillez remplir tous les champs.");
+    try {
+      const api = await fetch("https://chef-tech-api.vercel.app/api/recipes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(donnees),
+      });
+      const resultat = await api.json();
+      console.log("Réussite :", resultat);
+      return resultat;
+    } catch (er) {
+      return er;
     }
-  };
-
+  }
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#ED8243", dark: "#5C3223" }}
@@ -84,7 +80,12 @@ export default function Form() {
       </ThemedView>
 
       <ThemedView style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => {
+            handleSubmit().then((data) => setFood(data));
+          }}
+        >
           <Text style={styles.buttonText}>Envoyer</Text>
         </TouchableOpacity>
       </ThemedView>

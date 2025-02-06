@@ -47,7 +47,7 @@ export function RecipeCard(props: RecipeCardProps) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#fff",
+    backgroundColor: "#F5F1F5",
     borderRadius: 10,
     overflow: "hidden",
     shadowColor: "#000",

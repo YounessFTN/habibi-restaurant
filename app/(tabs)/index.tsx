@@ -2,28 +2,28 @@ import { HelloWave } from "@/components/HelloWave";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Image, StyleSheet } from "react-native";
 import { RecipeCard } from "../../components/RecipeCard";
-import { useFood } from "../../components/context/FoodContext"; // Import du contexte
 
-interface Recipe {
+type Recipe = {
+  id: string;
   title: string;
+  description: string;
+  imageUrl: string;
   picture: string;
   timeMinutes: number;
-}
+};
 
 const HomeScreen: React.FC = () => {
-  const { food, setFood } = useFood(); // Utilisation du contexte Food
-
-  const addRecipe = () => {
-    const newRecipe: Recipe = {
-      title: "tajine",
-      picture: "https://www.rustica.fr/images/couscous-tajine.jpg",
-      timeMinutes: 110,
-    };
-    setFood((prevFood: Recipe[]) => [...prevFood, newRecipe]); // Ajoute une nouvelle recette
-  };
+  const [food, setFood] = useState([]);
+  useEffect(() => {
+    fetch("https://chef-tech-api.vercel.app/api/recipes")
+      .then((rep) => {
+        return rep.json();
+      })
+      .then((data) => setFood(data));
+  }, []);
 
   return (
     <ParallaxScrollView
