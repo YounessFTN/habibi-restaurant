@@ -1,74 +1,73 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import { HelloWave } from "@/components/HelloWave";
+import ParallaxScrollView from "@/components/ParallaxScrollView";
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import React from "react";
+import { Image, StyleSheet } from "react-native";
+import { RecipeCard } from "../../components/RecipeCard";
+import { useFood } from "../../components/context/FoodContext"; // Import du contexte
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+interface Recipe {
+  title: string;
+  picture: string;
+  timeMinutes: number;
+}
 
-export default function HomeScreen() {
+const HomeScreen: React.FC = () => {
+  const { food, setFood } = useFood(); // Utilisation du contexte Food
+
+  const addRecipe = () => {
+    const newRecipe: Recipe = {
+      title: "tajine",
+      picture: "https://www.rustica.fr/images/couscous-tajine.jpg",
+      timeMinutes: 110,
+    };
+    setFood((prevFood: Recipe[]) => [...prevFood, newRecipe]); // Ajoute une nouvelle recette
+  };
+
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
+      headerBackgroundColor={{ light: "#ED8243", dark: "#5C3223" }}
       headerImage={
         <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+          source={{
+            uri: "https://images.unsplash.com/photo-1489749798305-4fea3ae63d43?q=80&w=2934&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          }}
+          style={styles.imageMaroc}
         />
-      }>
+      }
+    >
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
+        <ThemedText type="title">
+          Salam <HelloWave /> in Habibi Restaurante!
         </ThemedText>
       </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
+
+      {food.map((item: Recipe, index: number) => (
+        <RecipeCard key={index} recipe={item} />
+      ))}
     </ParallaxScrollView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
   stepContainer: {
     gap: 8,
     marginBottom: 8,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
+  imageMaroc: {
+    height: "100%", // Augmenter la hauteur pour un meilleur rendu
+    width: "100%", // Adapter la largeur à l'écran
+    resizeMode: "cover", // Assurer un bon rendu de l’image
+    position: "absolute",
     bottom: 0,
     left: 0,
-    position: 'absolute',
   },
 });
+
+export default HomeScreen;
